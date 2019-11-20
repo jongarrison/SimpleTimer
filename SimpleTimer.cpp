@@ -39,6 +39,7 @@ SimpleTimer::SimpleTimer() {
         callbacks[i] = 0;                   // if the callback pointer is zero, the slot is free, i.e. doesn't "contain" any timer
         prev_millis[i] = current_millis;
         numRuns[i] = 0;
+        debugs[i] = false;
     }
 
     numTimers = 0;
@@ -62,11 +63,24 @@ void SimpleTimer::run() {
             // is it time to process this timer ?
             // see http://arduino.cc/forum/index.php/topic,124048.msg932592.html#msg932592
 
-            if (current_millis - prev_millis[i] >= delays[i]) {
+            long passed = current_millis - prev_millis[i];
+            if (passed >= (long)delays[i]) {
+
+                if (debugs[i] == true) {
+                    Serial.println("ST: DEBUG TRIGGERED: passed:" + String(passed) + " ~ delays[i]:" + String(delays[i]) + " = current_millis:" + String(current_millis) + " - prev_millis[i]:" + String(prev_millis[i]));
+                }
 
                 // update time
                 //prev_millis[i] = current_millis;
-                prev_millis[i] += delays[i];
+
+                prev_millis[i] = current_millis; //switched to setting it to now. to avoid a tardy timer from being permanently in the past
+                
+                if (debugs[i] == true) {
+                    long targetGap = (prev_millis[i] - elapsed());
+                    if (targetGap > (long)delays[i]) {
+                        Serial.println("ST: WARNING TIMER TARGET BEING SET IN THE PAST: targetGap: " + String(targetGap) + ", delays[i]:" + String(delays[i]) + ", current_millis:" + String(current_millis) + ", prev_millis[i]:" + String(prev_millis[i]));
+                    }
+                }
 
                 // check if the timer callback has to be executed
                 if (enabled[i]) {
@@ -129,6 +143,11 @@ int SimpleTimer::findFirstFreeSlot() {
     return -1;
 }
 
+int SimpleTimer::setTimer(unsigned long d, timer_callback f, int n, boolean debug) {
+    int timerId = setTimer(d, f, n);
+    debugs[timerId] = debug;
+    return timerId;
+}
 
 int SimpleTimer::setTimer(unsigned long d, timer_callback f, int n) {
     int freeTimer;
@@ -153,11 +172,17 @@ int SimpleTimer::setTimer(unsigned long d, timer_callback f, int n) {
     return freeTimer;
 }
 
+int SimpleTimer::setInterval(unsigned long d, timer_callback f, boolean debug) {
+    return setTimer(d, f, RUN_FOREVER, debug);
+}
 
 int SimpleTimer::setInterval(unsigned long d, timer_callback f) {
     return setTimer(d, f, RUN_FOREVER);
 }
 
+int SimpleTimer::setTimeout(unsigned long d, timer_callback f, boolean debug) {
+    return setTimer(d, f, RUN_ONCE, debug);
+}
 
 int SimpleTimer::setTimeout(unsigned long d, timer_callback f) {
     return setTimer(d, f, RUN_ONCE);

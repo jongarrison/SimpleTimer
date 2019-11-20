@@ -53,12 +53,15 @@ public:
     void run();
 
     // call function f every d milliseconds
+    int setInterval(unsigned long d, timer_callback f, boolean debug);
     int setInterval(unsigned long d, timer_callback f);
 
     // call function f once after d milliseconds
+    int setTimeout(unsigned long d, timer_callback f, boolean debug);
     int setTimeout(unsigned long d, timer_callback f);
 
     // call function f every d milliseconds for n times
+    int setTimer(unsigned long d, timer_callback f, int n, boolean debug);
     int setTimer(unsigned long d, timer_callback f, int n);
 
     // destroy the specified timer
@@ -116,6 +119,9 @@ private:
 
     // deferred function call (sort of) - N.B.: this array is only used in run()
     int toBeCalled[MAX_TIMERS];
+
+    // whether this timer has debugging turned on
+    boolean debugs[MAX_TIMERS];
 
     // actual number of timers in use
     int numTimers;
