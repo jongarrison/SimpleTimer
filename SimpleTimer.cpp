@@ -59,7 +59,6 @@ void SimpleTimer::run() {
 
         // no callback == no timer, i.e. jump over empty slots
         if (callbacks[i]) {
-
             // is it time to process this timer ?
             // see http://arduino.cc/forum/index.php/topic,124048.msg932592.html#msg932592
 
@@ -71,8 +70,6 @@ void SimpleTimer::run() {
                 }
 
                 // update time
-                //prev_millis[i] = current_millis;
-
                 prev_millis[i] = current_millis; //switched to setting it to now. to avoid a tardy timer from being permanently in the past
                 
                 if (debugs[i] == true) {
