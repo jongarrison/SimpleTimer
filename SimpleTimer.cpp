@@ -26,7 +26,6 @@
 
 #include "SimpleTimer.h"
 
-
 // Select time function:
 //static inline unsigned long elapsed() { return micros(); }
 static inline unsigned long elapsed() { return millis(); }
@@ -131,7 +130,7 @@ int SimpleTimer::findFirstFreeSlot() {
 }
 
 
-int SimpleTimer::setTimer(long d, timer_callback f, int n) {
+int SimpleTimer::setTimer(unsigned long d, timer_callback f, int n) {
     int freeTimer;
 
     freeTimer = findFirstFreeSlot();
@@ -155,12 +154,12 @@ int SimpleTimer::setTimer(long d, timer_callback f, int n) {
 }
 
 
-int SimpleTimer::setInterval(long d, timer_callback f) {
+int SimpleTimer::setInterval(unsigned long d, timer_callback f) {
     return setTimer(d, f, RUN_FOREVER);
 }
 
 
-int SimpleTimer::setTimeout(long d, timer_callback f) {
+int SimpleTimer::setTimeout(unsigned long d, timer_callback f) {
     return setTimer(d, f, RUN_ONCE);
 }
 
