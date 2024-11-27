@@ -28,11 +28,7 @@
 #ifndef SIMPLETIMER_H
 #define SIMPLETIMER_H
 
-#if defined(ARDUINO) && ARDUINO >= 100
 #include <Arduino.h>
-#else
-#include <WProgram.h>
-#endif
 
 typedef void (*timer_callback)(void);
 
@@ -48,6 +44,7 @@ public:
 
     // constructor
     SimpleTimer();
+    SimpleTimer(Stream& debugStream);
 
     // this function must be called inside loop()
     void run();
@@ -125,6 +122,8 @@ private:
 
     // actual number of timers in use
     int numTimers;
+
+    Stream* _debugStream;
 };
 
 #endif

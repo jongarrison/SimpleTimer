@@ -45,6 +45,9 @@ SimpleTimer::SimpleTimer() {
     numTimers = 0;
 }
 
+SimpleTimer::SimpleTimer(Stream& debugStream): SimpleTimer() {
+    _debugStream = &debugStream;
+}
 
 void SimpleTimer::run() {
     int i;
@@ -65,17 +68,17 @@ void SimpleTimer::run() {
             long passed = current_millis - prev_millis[i];
             if (passed >= (long)delays[i]) {
 
-                if (debugs[i] == true) {
-                    Serial.println("ST: DEBUG TRIGGERED: passed:" + String(passed) + " ~ delays[i]:" + String(delays[i]) + " = current_millis:" + String(current_millis) + " - prev_millis[i]:" + String(prev_millis[i]));
+                if (_debugStream != nullptr && debugs[i] == true) {
+                    _debugStream->println("ST: DEBUG TRIGGERED: passed:" + String(passed) + " ~ delays[i]:" + String(delays[i]) + " = current_millis:" + String(current_millis) + " - prev_millis[i]:" + String(prev_millis[i]));
                 }
 
                 // update time
                 prev_millis[i] = current_millis; //switched to setting it to now. to avoid a tardy timer from being permanently in the past
                 
-                if (debugs[i] == true) {
+                if (_debugStream != nullptr && debugs[i] == true) {
                     long targetGap = (prev_millis[i] - elapsed());
                     if (targetGap > (long)delays[i]) {
-                        Serial.println("ST: WARNING TIMER TARGET BEING SET IN THE PAST: targetGap: " + String(targetGap) + ", delays[i]:" + String(delays[i]) + ", current_millis:" + String(current_millis) + ", prev_millis[i]:" + String(prev_millis[i]));
+                        _debugStream->println("ST: WARNING TIMER TARGET BEING SET IN THE PAST: targetGap: " + String(targetGap) + ", delays[i]:" + String(delays[i]) + ", current_millis:" + String(current_millis) + ", prev_millis[i]:" + String(prev_millis[i]));
                     }
                 }
 
